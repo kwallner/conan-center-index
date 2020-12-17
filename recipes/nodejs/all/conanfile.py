@@ -10,32 +10,31 @@ class NodejsInstallerConan(ConanFile):
     url = "https://github.com/conan-io/conan-center-index"
     homepage = "https://nodejs.org"
     license = "MIT"
-    settings = {"os_build": ["Windows", "Linux", "Macos"], "arch_build": ["x86_64"]}
+    settings = {"os_build", "arch_build"}
     no_copy_source = True
 
     @property
     def _source_subfolder(self):
         return os.path.join(self.source_folder, "source_subfolder")
 
+    def _extract_from_data(self):
+        data = self.conan_data["sources"][self.version][str(self.settings.os_build)][str(self.settings.arch_build)]
+        url, sha256 =data['url'], data['sha256']
+        filename = os.path.basename(url)
+        return url, filename, sha256
+
     def source(self):
-        os_name = {"Windows": "-win", "Macos": "-darwin", "Linux": "-linux"}
-        for data in self.conan_data["sources"][self.version]:
-            sha, url = data.values()
-            filename = url[url.rfind("/")+1:]
-            tools.download(url, filename)
-            tools.check_sha256(filename, sha)
-            if os_name[str(self.settings.os_build)] in url:
-                tools.unzip(filename)
-                os.rename(filename[:filename.rfind("x64")+3], self._source_subfolder)
+        data = self.conan_data["sources"][self.version][str(self.settings.os_build)][str(self.settings.arch_build)]
+        url, filename, sha256 = self._extract_from_data()
+        tools.download(url, filename, sha256=sha256)
+    
+    def build(self):
+        _, filename, _ = self._extract_from_data()
+        tools.unzip(os.path.join(self.source_folder, filename))
 
     def package(self):
-        self.copy(pattern="LICENSE", dst="licenses", src=self._source_subfolder)
-        self.copy(pattern="*", src=os.path.join(self._source_subfolder, "bin"), dst="bin")
-        self.copy(pattern="node.exe", src=self._source_subfolder, dst="bin")
-        self.copy(pattern="npm", src=self._source_subfolder, dst="bin")
-        self.copy(pattern="npx", src=self._source_subfolder, dst="bin")
+        _, filename, _ = self._extract_from_data()
+        self.copy(pattern="*", src=os.path.splitext(filename)[0])
 
     def package_info(self):
-        bin_dir = os.path.join(self.package_folder, "bin")
-        self.output.info('Appending PATH environment variable: {}'.format(bin_dir))
-        self.env_info.PATH.append(bin_dir)
+        self.env_info.PATH.append(self.package_folder)
