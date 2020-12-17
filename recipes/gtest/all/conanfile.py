@@ -14,19 +14,13 @@ class GTestConan(ConanFile):
     exports_sources = ["CMakeLists.txt", "patches/*"]
     generators = "cmake"
     settings = "os", "arch", "compiler", "build_type"
-    options = {"shared": [True, False], "build_gmock": [True, False], "fPIC": [True, False], "no_main": [True, False], "debug_postfix": "ANY", "hide_symbols": [True, False]}
-    default_options = {"shared": False, "build_gmock": True, "fPIC": True, "no_main": False, "debug_postfix": 'd', "hide_symbols": False}
+    options = {"shared": [True, False], "build_gmock": [True, False], "fPIC": [True, False], "no_main": [True, False], "hide_symbols": [True, False]}
+    default_options = {"shared": False, "build_gmock": True, "fPIC": True, "no_main": False, "hide_symbols": False}
     _source_subfolder = "source_subfolder"
-
-    @property
-    def _postfix(self):
-        return self.options.debug_postfix if self.settings.build_type == "Debug" else ""
 
     def config_options(self):
         if self.settings.os == "Windows":
             del self.options.fPIC
-        if self.settings.build_type != "Debug":
-            del self.options.debug_postfix
 
     def configure(self):
         if self.settings.os == "Windows":
@@ -37,11 +31,10 @@ class GTestConan(ConanFile):
         tools.get(**self.conan_data["sources"][self.version])
         extracted_dir = "googletest-release-" + self.version
         os.rename(extracted_dir, self._source_subfolder)
+        tools.replace_in_file("%s/googletest/cmake/internal_utils.cmake" % self._source_subfolder, 'DEBUG_POSTFIX "d"', 'DEBUG_POSTFIX ""')
 
     def _configure_cmake(self):
         cmake = CMake(self)
-        if self.settings.build_type == "Debug":
-            cmake.definitions["CUSTOM_DEBUG_POSTFIX"] = self.options.debug_postfix
         if self.settings.os == "Windows" and self.settings.get_safe("compiler.runtime"):
             cmake.definitions["gtest_force_shared_crt"] = "MD" in str(self.settings.compiler.runtime)
         cmake.definitions["BUILD_GMOCK"] = self.options.build_gmock
@@ -53,8 +46,9 @@ class GTestConan(ConanFile):
         return cmake
 
     def build(self):
-        for patch in self.conan_data["patches"][self.version]:
-            tools.patch(**patch)
+        if self.version in self.conan_data["patches"]:
+            for patch in self.conan_data["patches"][self.version]:
+                tools.patch(**patch)
         cmake = self._configure_cmake()
         cmake.build()
 
@@ -75,7 +69,7 @@ class GTestConan(ConanFile):
         self.cpp_info.names["cmake_find_package_multi"] = "GTest"
         self.cpp_info.components["libgtest"].names["cmake_find_package"] = "gtest"
         self.cpp_info.components["libgtest"].names["cmake_find_package_multi"] = "gtest"
-        self.cpp_info.components["libgtest"].libs = ["gtest{}".format(self._postfix)]
+        self.cpp_info.components["libgtest"].libs = ["gtest"]
         if self.settings.os == "Linux":
             self.cpp_info.components["libgtest"].system_libs.append("pthread")
 
@@ -88,12 +82,12 @@ class GTestConan(ConanFile):
                 self.cpp_info.components["libgtest"].defines.append("GTEST_HAS_TR1_TUPLE=0")
 
         if not self.options.no_main:
-            self.cpp_info.components["gtest_main"].libs = ["gtest_main{}".format(self._postfix)]
+            self.cpp_info.components["gtest_main"].libs = ["gtest_main"]
             self.cpp_info.components["gtest_main"].requires = ["libgtest"]
 
         if self.options.build_gmock:
-            self.cpp_info.components["gmock"].libs = ["gmock{}".format(self._postfix)]
+            self.cpp_info.components["gmock"].libs = ["gmock"]
             self.cpp_info.components["gmock"].requires = ["libgtest"]
             if not self.options.no_main:
-                self.cpp_info.components["gmock_main"].libs = ["gmock_main{}".format(self._postfix)]
+                self.cpp_info.components["gmock_main"].libs = ["gmock_main"]
                 self.cpp_info.components["gmock_main"].requires = ["gmock"]
