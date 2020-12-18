@@ -1,0 +1,4 @@
+sources:
+  "2.0.3":
+    sha256: 6232ff97f8f19697f734f3a51cdfb62be5d28c662385e130a265b7a1165ec66e
+    url: https://mosquitto.org/files/source/mosquitto-2.0.3.tar.gz
