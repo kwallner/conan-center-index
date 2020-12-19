@@ -1,0 +1,92 @@
+diff -r -u source_subfolder.orig/apps/mosquitto_passwd/CMakeLists.txt source_subfolder/apps/mosquitto_passwd/CMakeLists.txt
+--- source_subfolder.orig/apps/mosquitto_passwd/CMakeLists.txt	2020-12-19 01:31:23.495757700 +0100
++++ source_subfolder/apps/mosquitto_passwd/CMakeLists.txt	2020-12-19 00:59:06.946269500 +0100
+@@ -14,5 +14,8 @@
+ 
+ 
+ 	target_link_libraries(mosquitto_passwd ${OPENSSL_LIBRARIES})
++    if (WIN32)
++        target_link_libraries(mosquitto_passwd crypt32 ws2_32)
++    endif (WIN32)
+ 	install(TARGETS mosquitto_passwd RUNTIME DESTINATION "${CMAKE_INSTALL_BINDIR}")
+ endif (WITH_TLS)
+diff -r -u source_subfolder.orig/CMakeLists.txt source_subfolder/CMakeLists.txt
+--- source_subfolder.orig/CMakeLists.txt	2020-12-19 01:31:22.962207300 +0100
++++ source_subfolder/CMakeLists.txt	2020-12-19 00:56:15.688137200 +0100
+@@ -10,7 +10,7 @@
+ project(mosquitto)
+ set (VERSION 2.0.3)
+ 
+-list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/")
++list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake/")
+ 
+ add_definitions (-DCMAKE -DVERSION=\"${VERSION}\")
+ 
+diff -r -u source_subfolder.orig/lib/CMakeLists.txt source_subfolder/lib/CMakeLists.txt
+--- source_subfolder.orig/lib/CMakeLists.txt	2020-12-19 01:31:23.835516200 +0100
++++ source_subfolder/lib/CMakeLists.txt	2020-12-19 00:52:09.121582900 +0100
+@@ -69,7 +69,7 @@
+ endif (UNIX AND NOT APPLE AND NOT ANDROID)
+ 
+ if (WIN32)
+-	set (LIBRARIES ${LIBRARIES} ws2_32)
++	set (LIBRARIES ${LIBRARIES} crypt32 ws2_32)
+ endif (WIN32)
+ 
+ if (WITH_SRV)
+@@ -83,6 +83,7 @@
+ 	endif (ARES_HEADER)
+ endif (WITH_SRV)
+ 
++if (WITH_SHARED_LIBRARIES)
+ add_library(libmosquitto SHARED ${C_SRC})
+ set_target_properties(libmosquitto PROPERTIES
+ 	POSITION_INDEPENDENT_CODE 1
+@@ -97,6 +98,7 @@
+ )
+ 
+ install(TARGETS libmosquitto RUNTIME DESTINATION "${CMAKE_INSTALL_BINDIR}" LIBRARY DESTINATION "${CMAKE_INSTALL_LIBDIR}")
++endif()
+ 
+ if (WITH_STATIC_LIBRARIES)
+ 	add_library(libmosquitto_static STATIC ${C_SRC})
+diff -r -u source_subfolder.orig/lib/cpp/CMakeLists.txt source_subfolder/lib/cpp/CMakeLists.txt
+--- source_subfolder.orig/lib/cpp/CMakeLists.txt	2020-12-19 01:31:23.758540700 +0100
++++ source_subfolder/lib/cpp/CMakeLists.txt	2020-12-19 00:50:11.528693400 +0100
+@@ -5,6 +5,7 @@
+ 
+ set(CPP_SRC mosquittopp.cpp mosquittopp.h)
+ 
++if (WITH_SHARED_LIBRARIES)
+ add_library(mosquittopp SHARED ${CPP_SRC})
+ set_target_properties(mosquittopp PROPERTIES
+ 	POSITION_INDEPENDENT_CODE 1
+@@ -15,6 +16,7 @@
+ 	SOVERSION 1
+ )
+ install(TARGETS mosquittopp RUNTIME DESTINATION "${CMAKE_INSTALL_BINDIR}" LIBRARY DESTINATION "${CMAKE_INSTALL_LIBDIR}")
++endif()
+ 
+ if (WITH_STATIC_LIBRARIES)
+ 	add_library(mosquittopp_static STATIC
+@@ -30,7 +32,7 @@
+ 	target_link_libraries(mosquittopp_static ${LIBRARIES})
+ 
+ 	set_target_properties(mosquittopp_static PROPERTIES
+-		OUTPUT_NAME mosquittopp_static
++		OUTPUT_NAME mosquittopp
+ 		VERSION ${VERSION}
+ 	)
+ 
+diff -r -u source_subfolder.orig/src/CMakeLists.txt source_subfolder/src/CMakeLists.txt
+--- source_subfolder.orig/src/CMakeLists.txt	2020-12-19 01:31:23.152012300 +0100
++++ source_subfolder/src/CMakeLists.txt	2020-12-19 00:57:27.675753700 +0100
+@@ -182,7 +182,7 @@
+ endif (UNIX)
+ 
+ if (WIN32)
+-	set (MOSQ_LIBS ${MOSQ_LIBS} ws2_32)
++	set (MOSQ_LIBS ${MOSQ_LIBS} crypt32 ws2_32)
+ endif (WIN32)
+ 
+ if (WITH_WEBSOCKETS)
