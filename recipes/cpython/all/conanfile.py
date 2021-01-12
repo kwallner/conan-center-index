@@ -1,7 +1,7 @@
 import glob
 import os
 import shutil
-from conans import ConanFile, tools
+from conans import ConanFile, tools, AutoToolsBuildEnvironment
 from conans.errors import ConanInvalidConfiguration
 
 
@@ -32,8 +32,7 @@ class CPythonConan(ConanFile):
     def system_requirements(self):
         if self.settings.os == "Linux":
             installer = tools.SystemPackageTool()
-            installer.install("libffi-dev") 
-            installer.install("libz-dev") 
+            installer.install("zlib1g-dev") 
 
     def source(self):
         tools.get(**self.conan_data["sources"][self.version])
@@ -88,13 +87,14 @@ class CPythonConan(ConanFile):
         del self.info.settings.compiler
         
     def package_info(self):
-        self.cpp_info.includedirs = ['include'] # Check Linux: self.cpp_info.includedirs.append("include/%s" % name)
-        self.cpp_info.bindirs = ['.' if self.settings.os == "Windows" else 'bin']
-        self.cpp_info.libdirs = ['libs']
-        self.cpp_info.libs = [ "python%sm" % ".".join(self.version.split(".")[0:2]) ]     
+        python_name = "python%s" % "".join(self.version.split(".")[0:2]) if self.settings.os == "Windows" else "python%sm" % ".".join(self.version.split(".")[0:2])
+        self.cpp_info.includedirs = ["include" if self.settings.os == "Windows" else "include/%s" % python_name] 
+        self.cpp_info.bindirs = ["." if self.settings.os == "Windows" else 'bin']
+        self.cpp_info.libdirs = ["libs" if self.settings.os == "Windows" else "lib"]
+        self.cpp_info.libs = [ python_name ]     
         if self.settings.os == "Macos":
-            self.cpp_info.libs.append("dl")
-            self.cpp_info.exelinkflags.append("-framework CoreFoundation")
-            elf.cpp_info.sharedlinkflags = self.cpp_info.exelinkflags
+            self.cpp_info.system_libs = [ "dl" ]
+            self.cpp_info.exelinkflags = [ "-framework", "CoreFoundation" ]
+            self.cpp_info.sharedlinkflags = [ "-framework", "CoreFoundation" ]
         elif self.settings.os == "Linux":
-            self.cpp_info.libs.extend(["pthread", "dl", "util"])
+            self.cpp_info.system_libs = [ "pthread", "dl", "util" ]
