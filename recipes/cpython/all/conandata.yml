@@ -1,0 +1,4 @@
+sources:
+  "3.7.9":
+    url: "https://www.python.org/ftp/python/3.7.9/Python-3.7.9.tgz"
+    sha256: "39b018bc7d8a165e59aa827d9ae45c45901739b0bbb13721e4f973f3521c166a"
