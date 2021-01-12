@@ -1,4 +1,5 @@
 import os
+import stat
 from conans import ConanFile, tools
 from conans.errors import ConanInvalidConfiguration
 
@@ -20,21 +21,28 @@ class BazelInstallerConan(ConanFile):
     def _extract_from_data(self):
         data = self.conan_data["sources"][self.version][str(self.settings.os_build)][str(self.settings.arch_build)]
         url, sha256 =data['url'], data['sha256']
-        filename = os.path.basename(url)
-        return url, filename, sha256
+        return url, sha256
+    
+    def _executable_filename(self):
+        if self.settings.os_build == "Windows":
+            return self.name + ".exe" 
+        else:
+            return self.name
 
     def source(self):
         data = self.conan_data["sources"][self.version][str(self.settings.os_build)][str(self.settings.arch_build)]
-        url, filename, sha256 = self._extract_from_data()
+        url, sha256 = self._extract_from_data()
+        filename = self._executable_filename()
         tools.download(url, filename, sha256=sha256)
+        st = os.stat(filename)
+        os.chmod(filename, st.st_mode | stat.S_IEXEC)
     
     def build(self):
-        _, filename, _ = self._extract_from_data()
-        tools.unzip(os.path.join(self.source_folder, filename), destination=os.path.splitext(filename)[0])
+        pass
 
     def package(self):
-        _, filename, _ = self._extract_from_data()
-        self.copy(pattern="*", src=os.path.splitext(filename)[0])
+        filename = self._executable_filename()
+        self.copy(pattern=filename)
 
     def package_info(self):
         self.env_info.PATH.append(self.package_folder)

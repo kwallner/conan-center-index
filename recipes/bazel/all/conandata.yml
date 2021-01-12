@@ -4,3 +4,7 @@ sources:
       "x86_64" : 
         url: "https://github.com/bazelbuild/bazel/releases/download/3.1.0/bazel-3.1.0-windows-x86_64.zip"
         sha256: "bd7b5b3cdc31f2672e7c0df8dd684ef8e0282ac6fc575c852540b8fed0ecb5fc"
+    "Linux":
+      "x86_64" : 
+        url: "https://github.com/bazelbuild/bazel/releases/download/3.1.0/bazel-3.1.0-linux-x86_64"
+        sha256: "753434f4fa730266cf5ce21d1fdd425e1e167dd9347ad3e8adc19e8c0d54edca"
