@@ -16,6 +16,11 @@ class TestPackageConan(ConanFile):
     ]
 
     def build(self):
+        # Ugly hack to make debug test_package work on windows
+        if self.settings.os == "Windows" and self.settings.build_type == "Debug":
+            python_vers = "".join(self.deps_cpp_info["cpython"].version.split(".")[0:2])
+            tools.replace_in_file("conanbuildinfo.cmake", "python%s" % python_vers, "python%s_d" % python_vers, strict=False)
+            tools.replace_in_file("Findcpython.cmake", "python%s" % python_vers, "python%s_d" % python_vers, strict=False)
         cmake = CMake(self)
         cmake.definitions['CMAKE_VERBOSE_MAKEFILE'] = True
         for test_package_variant in self._test_package_variants:

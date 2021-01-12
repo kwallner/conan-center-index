@@ -21,15 +21,21 @@ class CPythonConan(ConanFile):
 
     def configure(self):
         if self.settings.os == "Windows":
+            if not self.options.shared:
+                raise ConanInvalidConfiguration("Python does not support static build on windows")
+
+    def _build_configuration(self):
+        # Not using configure or config_options here as the check is only relevant when building (it is called from "build")
+        # configure run also when doing "install", see https://docs.conan.io/en/latest/reference/commands/consumer/install.html
+        # but as self.settings.compiler are deleteted in package_id using the package with differnt compiler will cause an error
+        if self.settings.os == "Windows":
             if self.settings.compiler == "Visual Studio" and tools.Version(self.settings.compiler.version.value) == "15":
                 pass
             elif self.settings.compiler == "Visual Studio" and self.settings.compiler.version == "16" and self.settings.compiler.toolset == "v141":
                 pass
             else:
                 raise ConanInvalidConfiguration("Python does only support Visual Studio 2017 or Visual Studio 2019 with toolset v141")
-            if not self.options.shared:
-                raise ConanInvalidConfiguration("Python does not support static build on windows")
-
+           
     def system_requirements(self):
         if self.settings.os == "Linux":
             installer = tools.SystemPackageTool()
@@ -41,6 +47,7 @@ class CPythonConan(ConanFile):
         os.rename(extracted_dir, self._source_subfolder)
         
     def build(self):
+        self._build_configuration()
         with tools.chdir(self._source_subfolder):
             if self.settings.os == "Windows":
                 with tools.chdir("PCBuild"):
@@ -101,3 +108,11 @@ class CPythonConan(ConanFile):
             self.cpp_info.sharedlinkflags = [ "-framework", "CoreFoundation" ]
         elif self.settings.os == "Linux":
             self.cpp_info.system_libs = [ "pthread", "dl", "util" ]
+        if self.settings.os == "Windows":
+            self.env_info.PATH.insert(0, self.package_folder)
+        else:
+            self.env_info.PATH.insert(0, os.path.join(self.package_folder, "bin"))
+        python_lib = os.path.join(self.package_folder, "Lib" if self.settings.os == "Windows" else "lib")   
+        self.env_info.PYTHONPATH.insert(0, python_lib)
+        self.env_info.PYTHONPATH.insert(0, os.path.join(python_lib, "site-packages"))
+        self.env_info.PYTHONHOME = self.package_folder
