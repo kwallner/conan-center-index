@@ -3,6 +3,7 @@ import os
 import shutil
 from conans import ConanFile, tools, AutoToolsBuildEnvironment
 from conans.errors import ConanInvalidConfiguration
+from conans.model.version import Version
 
 
 class CPythonConan(ConanFile):
@@ -87,7 +88,9 @@ class CPythonConan(ConanFile):
         del self.info.settings.compiler
         
     def package_info(self):
-        python_name = "python%s" % "".join(self.version.split(".")[0:2]) if self.settings.os == "Windows" else "python%sm" % ".".join(self.version.split(".")[0:2])
+        python_vers = ("" if self.settings.os == "Windows" else ".").join(self.version.split(".")[0:2])
+        python_flag = "m" if self.settings.os != "Windows" and Version(self.version) < "3.8" else ""
+        python_name = "python%s%s" % (python_vers, python_flag)
         self.cpp_info.includedirs = ["include" if self.settings.os == "Windows" else "include/%s" % python_name] 
         self.cpp_info.bindirs = ["." if self.settings.os == "Windows" else 'bin']
         self.cpp_info.libdirs = ["libs" if self.settings.os == "Windows" else "lib"]
