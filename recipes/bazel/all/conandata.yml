@@ -1,4 +1,13 @@
 sources:
+  "2.0.1":
+    "Windows":
+      "x86_64" : 
+        url: "https://github.com/bazelbuild/bazel/releases/download/2.0.1/bazel-2.0.1-windows-x86_64.exe"
+        sha256: "7226dd714ae267fa3382f54c00c87779399ceeae15fbfca8263e4e47ca59dbb3"
+    "Linux":
+      "x86_64" : 
+        url: "https://github.com/bazelbuild/bazel/releases/download/2.0.1/bazel-2.0.1-linux-x86_64"
+        sha256: "fe663ab63f197209310b2f92e45079f3f542acfdbd801b51874be8f503bccf5a"
   "3.1.0":
     "Windows":
       "x86_64" : 
