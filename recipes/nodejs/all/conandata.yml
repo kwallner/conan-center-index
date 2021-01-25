@@ -91,3 +91,25 @@ sources:
       "x86_64" : 
         url: "https://nodejs.org/dist/v14.15.3/node-v14.15.3-darwin-x64.tar.gz"
         sha256: "0dfaa48a76b6f4164bdf6fac64b7c88d542d53f04ce0a9bba2bbb565e31fbb2d"
+  "14.15.4":
+    "Windows":
+      "x86_64" : 
+        url: "https://nodejs.org/dist/v14.15.4/node-v14.15.4-win-x64.zip"
+        sha256: "b2a0765240f8fbd3ba90a050b8c87069d81db36c9f3745aff7516e833e4d2ed6"
+      "x86" : 
+        url: "https://nodejs.org/dist/v14.15.4/node-v14.15.4-win-x86.zip"
+        sha256: "49b2ee6106192894809ce14a2932dca41a6bcf5602ce19413fcb3a477f8613b2"
+    "Linux":
+      "x86_64" : 
+        url: "https://nodejs.org/dist/v14.15.4/node-v14.15.4-linux-x64.tar.xz"
+        sha256: "b990bd99679158c3164c55a20c2a6677c3d9e9ffdfa0d4a40afe9c9b5e97a96f"
+      "armv8" : 
+        url: "https://nodejs.org/dist/v14.15.4/node-v14.15.4-linux-arm64.tar.xz"
+        sha256: "b990bd99679158c3164c55a20c2a6677c3d9e9ffdfa0d4a40afe9c9b5e97a96f"
+      "armv7" : 
+        url: "https://nodejs.org/dist/v14.15.4/node-v14.15.4-linux-armv7l.tar.xz"
+        sha256: "bafe4bfb22b046cdda3475d23cd6999c5ea85180c180c4bbb94014920aa7231b"
+    "Macos":
+      "x86_64" : 
+        url: "https://nodejs.org/dist/v14.15.4/node-v14.15.4-darwin-x64.tar.gz"
+        sha256: "6b0e19e5c2601ef97510f7eb4f52cc8ee261ba14cb05f31eb1a41a5043b0304e"
