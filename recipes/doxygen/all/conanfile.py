@@ -36,16 +36,14 @@ class DoxygenConan(ConanFile):
                 raise ConanInvalidConfiguration("Compiler version too old. At least {} is required.".format(minimum_compiler_version))
         del self.settings.compiler.cppstd
 
-    def requirements(self):
-        self.requires("xapian-core/1.4.16")
-        self.requires("zlib/1.2.11")
-
     def build_requirements(self):
         if tools.os_info.is_windows:
             self.build_requires("winflexbison/2.5.22")
         else:
             self.build_requires("flex/2.6.4")
             self.build_requires("bison/3.7.1")
+        self.build_requires("xapian-core/1.4.16")
+        self.build_requires("zlib/1.2.11")
 
     def source(self):
         tools.get(**self.conan_data["sources"][self.version])
@@ -76,6 +74,9 @@ class DoxygenConan(ConanFile):
         self.copy("LICENSE", src=self._source_subfolder, dst="licenses")
         cmake = self._configure_cmake()
         cmake.install()
+
+    def package_id(self):
+        del self.info.settings.compiler
 
     def package_info(self):
         bin_path = os.path.join(self.package_folder, "bin")
