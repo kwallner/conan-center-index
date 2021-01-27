@@ -32,6 +32,9 @@ class GTestConan(ConanFile):
         extracted_dir = "googletest-release-" + self.version
         os.rename(extracted_dir, self._source_subfolder)
         tools.replace_in_file("%s/googletest/cmake/internal_utils.cmake" % self._source_subfolder, 'DEBUG_POSTFIX "d"', 'DEBUG_POSTFIX ""')
+        if self.version in self.conan_data["patches"]:
+            for patch in self.conan_data["patches"][self.version]:
+                tools.patch(**patch)
 
     def _configure_cmake(self):
         cmake = CMake(self)
@@ -46,9 +49,6 @@ class GTestConan(ConanFile):
         return cmake
 
     def build(self):
-        if self.version in self.conan_data["patches"]:
-            for patch in self.conan_data["patches"][self.version]:
-                tools.patch(**patch)
         cmake = self._configure_cmake()
         cmake.build()
 
