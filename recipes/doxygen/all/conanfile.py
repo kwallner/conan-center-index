@@ -38,7 +38,7 @@ class DoxygenConan(ConanFile):
 
     def build_requirements(self):
         if tools.os_info.is_windows:
-            self.build_requires("winflexbison/2.5.22")
+            self.build_requires("msys2/20200517")
         else:
             self.build_requires("flex/2.6.4")
             self.build_requires("bison/3.7.1")
