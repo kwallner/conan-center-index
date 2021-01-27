@@ -13,3 +13,29 @@ if(MSVC)
 endif(MSVC)
 
 add_subdirectory("source_subfolder")
+
+include(CMakePackageConfigHelpers)
+write_basic_package_version_file(
+  ${CMAKE_CURRENT_BINARY_DIR}/GTestConfigVersion.cmake
+  VERSION ${GTEST_VERSION}
+  COMPATIBILITY SameMajorVersion)
+configure_file(cmake/GTestConfig.cmake.in
+               ${CMAKE_CURRENT_BINARY_DIR}/GTestConfig.cmake
+               COPYONLY)
+
+if (BUILD_GMOCK)
+  export(TARGETS gtest gtest_main gmock gmock_main
+        FILE ${CMAKE_CURRENT_BINARY_DIR}/GTestTargets.cmake
+       )
+else()
+  export(TARGETS gtest gtest_main
+       FILE ${CMAKE_CURRENT_BINARY_DIR}/GTestTargets.cmake
+      )
+endif()
+install(FILES
+          ${CMAKE_CURRENT_BINARY_DIR}/GTestConfigVersion.cmake
+          ${CMAKE_CURRENT_BINARY_DIR}/GTestTargets.cmake
+          ${CMAKE_CURRENT_BINARY_DIR}/GTestConfig.cmake
+        DESTINATION
+          .)
+
