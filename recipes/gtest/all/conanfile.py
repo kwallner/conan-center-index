@@ -11,13 +11,12 @@ class GTestConan(ConanFile):
     homepage = "https://github.com/google/googletest"
     license = "BSD-3-Clause"
     topics = ("conan", "gtest", "testing", "google-testing", "unit-test")
-    exports_sources = ["CMakeLists.txt", "patches/*", "cmake/*"]
+    exports_sources = ["CMakeLists.txt", "patches/*"]
     generators = "cmake"
     settings = "os", "arch", "compiler", "build_type"
     options = {"shared": [True, False], "build_gmock": [True, False], "fPIC": [True, False], "no_main": [True, False], "hide_symbols": [True, False]}
     default_options = {"shared": False, "build_gmock": True, "fPIC": True, "no_main": False, "hide_symbols": False}
     _source_subfolder = "source_subfolder"
-    no_copy_source = True
 
     def config_options(self):
         if self.settings.os == "Windows":
@@ -39,7 +38,6 @@ class GTestConan(ConanFile):
 
     def _configure_cmake(self):
         cmake = CMake(self)
-        cmake.definitions["GTEST_VERSION"] = self.version
         if self.settings.os == "Windows" and self.settings.get_safe("compiler.runtime"):
             cmake.definitions["gtest_force_shared_crt"] = "MD" in str(self.settings.compiler.runtime)
         cmake.definitions["BUILD_GMOCK"] = self.options.build_gmock
