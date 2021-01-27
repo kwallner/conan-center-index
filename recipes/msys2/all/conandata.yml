@@ -32,3 +32,13 @@ sources:
              "https://sourceforge.net/projects/msys2/files/Base/x86_64/msys2-base-x86_64-20200517.tar.xz",
       ]
       sha256: "c4443113497acb2d2e285d40b929fc55f33f8f669902595ecdf66a655b63dc60"
+  "20210105":
+    - url: [
+      # No support for i686 any more
+    ]
+      sha256: "" 
+    - url: [
+             "http://repo.msys2.org/distrib/x86_64/msys2-base-x86_64-20210105.tar.xz",
+             "https://sourceforge.net/projects/msys2/files/Base/x86_64/msys2-base-x86_64-20210105.tar.xz",
+      ]
+      sha256: "982e54de087d53adfc6a8caf7614d4a7add36dd02dcb0b7838060dd893e9f596"
