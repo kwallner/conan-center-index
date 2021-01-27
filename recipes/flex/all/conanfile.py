@@ -27,19 +27,21 @@ class FlexConan(ConanFile):
         extracted_dir = self.name + "-" + self.version
         os.rename(extracted_dir, self._source_subfolder)
 
-    def requirements(self):
-        self.requires("m4/1.4.18")
+    def build_requirements(self):
+        self.build_requires("m4/1.4.18")
+        if self.settings.os == "Windows": 
+            self.build_requires("msys2/20200517")
 
     def configure(self):
+        if self.settings.os == "Windows": 
+            self.options["msys2"].additional_packages = "mingw-w64-x86_64-libgnurx"
         del self.settings.compiler.libcxx
         del self.settings.compiler.cppstd
-        if self.settings.os == "Windows":
-            raise ConanInvalidConfiguration("Flex package is not compatible with Windows. Consider using winflexbison instead.")
 
     def _configure_autotools(self):
         if self._autotools:
             return self._autotools
-        self._autotools = AutoToolsBuildEnvironment(self)
+        self._autotools = AutoToolsBuildEnvironment(self, win_bash=tools.os_info.is_windows)
         yes_no = lambda v: "yes" if v else "no"
         configure_args = [
             "--enable-shared={}".format(yes_no(self.options.shared)),
