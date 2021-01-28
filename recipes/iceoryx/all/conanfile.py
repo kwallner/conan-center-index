@@ -1,4 +1,5 @@
-from conans import ConanFile, tools, AutoToolsBuildEnvironment
+from conans import ConanFile, tools
+from conans.tools import os_info, SystemPackageTool
 from contextlib import contextmanager
 import os
 
@@ -21,6 +22,13 @@ class CpptomlConan(ConanFile):
     def config_options(self):
         if self.settings.os == "Windows":
             del self.options.fPIC
+
+    def system_requirements(self):
+        if os_info.is_linux:
+            installer = SystemPackageTool()
+            if os_info.linux_distro == "ubuntu":
+                installer.install("libacl1-dev")
+                installer.install("libncurses5-dev")
 
     def build_requirements(self):
         self.build_requires("cmake/3.19.2")
