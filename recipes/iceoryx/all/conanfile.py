@@ -23,6 +23,12 @@ class CpptomlConan(ConanFile):
         if self.settings.os == "Windows":
             del self.options.fPIC
 
+    def configure(self):
+        if os_info.is_macos:
+            tools.check_min_cppstd(self, "17")
+        else:
+            tools.check_min_cppstd(self, "14")
+
     def system_requirements(self):
         if os_info.is_linux:
             installer = SystemPackageTool()

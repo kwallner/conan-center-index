@@ -10,10 +10,14 @@ patches:
       base_path: "source_subfolder"
     - patch_file: "patches/iceoryx-0.90.0-use_cpptoml_from_conan.patch"
       base_path: "source_subfolder"
+    - patch_file: "patches/iceoryx-0.90.0-use_conan_cxx_standard.patch"
+      base_path: "source_subfolder"
   "master":
     - patch_file: "patches/iceoryx-master-use_gtest_from_conan.patch"
       base_path: "source_subfolder"
     - patch_file: "patches/iceoryx-master-use_cpptoml_from_conan.patch"
+      base_path: "source_subfolder"
+    - patch_file: "patches/iceoryx-master-use_conan_cxx_standard.patch"
       base_path: "source_subfolder"
 
       

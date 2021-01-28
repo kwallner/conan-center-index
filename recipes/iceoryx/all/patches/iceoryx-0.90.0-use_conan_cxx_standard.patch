@@ -1,0 +1,22 @@
+diff --git a/iceoryx_utils/cmake/IceoryxPlatform.cmake b/iceoryx_utils/cmake/IceoryxPlatform.cmake
+index 43c5a32..90b5fd0 100644
+--- a/iceoryx_utils/cmake/IceoryxPlatform.cmake
++++ b/iceoryx_utils/cmake/IceoryxPlatform.cmake
+@@ -21,6 +21,9 @@ if(UNIX AND NOT APPLE)
+     endif()
+ endif()
+ 
++if (CONAN_CMAKE_CXX_STANDARD)
++set(ICEORYX_CXX_STANDARD ${CONAN_CMAKE_CXX_STANDARD})
++else ()
+ if(LINUX)
+     set(ICEORYX_CXX_STANDARD 14)
+ elseif(QNX)
+@@ -30,6 +33,7 @@ elseif(WIN32)
+ elseif(APPLE)
+     set(ICEORYX_CXX_STANDARD 17)
+ endif()
++endif()
+ 
+ if(CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
+     set(ICEORYX_WARNINGS PRIVATE ${ICEORYX_WARNINGS} /W1)
