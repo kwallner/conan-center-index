@@ -12,7 +12,6 @@ class CpptomlConan(ConanFile):
     description = ""
     url = "https://github.com/eclipse-iceoryx/iceoryx"
     author = ""
-    scm = { "type": "git", "url": "auto", "revision": "auto" }
     exports_sources = ["CMakeLists.txt", "iceoryxConfig.cmake", "patches/*"]
     options = {"shared": [True, False], "fPIC": [True, False], "build_test": [True, False], "build_doc": [True, False], "build_examples": [True, False]}
     default_options = {"shared": False, "fPIC": True, "build_test" : True, "build_doc" : False, "build_examples" : True } 
