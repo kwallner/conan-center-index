@@ -1,0 +1,10 @@
+sources:
+  "0.90.0":
+    url: "https://github.com/eclipse-iceoryx/iceoryx/archive/v0.90.0.tar.gz"
+    sha256: "94668e100f72efd0357104d67aac260ed3cf7f268816ef882a298a32ad83fde6"
+patches:
+  "0.90.0":
+    - patch_file: "patches/iceoryx-0.90.0-use_gtest_from_conan.patch"
+      base_path: "source_subfolder"
+    - patch_file: "patches/iceoryx-0.90.0-use_cpptoml_from_conan.patch"
+      base_path: "source_subfolder"
