@@ -1,0 +1,12 @@
+diff --git a/cmake/Modules/FindOpenSSL.cmake b/cmake/Modules/FindOpenSSL.cmake
+index ab6fb0e..319cbbc 100644
+--- a/cmake/Modules/FindOpenSSL.cmake
++++ b/cmake/Modules/FindOpenSSL.cmake
+@@ -40,3 +40,7 @@ if(OPENSSL_FOUND AND EXISTS "${OPENSSL_INCLUDE_DIR}/openssl/applink.c")
+ else()
+   set(CYCLONEDDS_OPENSSL_APPLINK "")
+ endif()
++
++if (WIN32)
++  set_property( TARGET OpenSSL::SSL APPEND PROPERTY INTERFACE_LINK_LIBRARIES crypt32)
++endif()

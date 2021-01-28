@@ -1,0 +1,14 @@
+sources:
+  "0.7.0":
+    url: "https://github.com/eclipse-cyclonedds/cyclonedds/archive/0.7.0.tar.gz"
+    sha256: "ff3a8545c78c0019014bbb906da2f44184e919a4f9985995014a0b08238d86e5"
+  "0.8.0beta1":
+    url: "https://github.com/eclipse-cyclonedds/cyclonedds/archive/0.8.0beta1.tar.gz"
+    sha256: "51a675098101899ce3cc5327c842f03a819b973062d3738435ea85a90d9767d2"
+patches:
+  "0.7.0":
+    - patch_file: "patches/cyclonedds-0.7.0-openssl_link_crypt32_on_windows.patch"
+      base_path: "source_subfolder"
+  "0.8.0beta1":
+    - patch_file: "patches/cyclonedds-0.7.0-openssl_link_crypt32_on_windows.patch"
+      base_path: "source_subfolder"
