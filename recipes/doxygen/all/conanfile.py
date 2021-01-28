@@ -77,6 +77,7 @@ class DoxygenConan(ConanFile):
 
     def package_id(self):
         del self.info.settings.compiler
+        del self.info.settings.build_type
 
     def package_info(self):
         bin_path = os.path.join(self.package_folder, "bin")
