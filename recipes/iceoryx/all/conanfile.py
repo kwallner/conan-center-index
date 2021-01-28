@@ -31,7 +31,6 @@ class CpptomlConan(ConanFile):
                 installer.install("libncurses5-dev")
 
     def build_requirements(self):
-        self.build_requires("cmake/3.19.2")
         if self.options.build_test:
             self.build_requires("gtest/1.10.0")
         if self.options.build_doc:
