@@ -1,0 +1,13 @@
+diff --git a/iceoryx_meta/CMakeLists.txt b/iceoryx_meta/CMakeLists.txt
+index 17a5cc6..ae7a118 100644
+--- a/iceoryx_meta/CMakeLists.txt
++++ b/iceoryx_meta/CMakeLists.txt
+@@ -31,7 +31,7 @@ endif()
+ 
+ # ===== Dependencies
+ if(TOML_CONFIG)
+-    add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../cmake/cpptoml/ ${CMAKE_BINARY_DIR}/dependencies/cpptoml/prebuild)
++    find_package(cpptoml REQUIRED)
+ endif()
+ 
+ # ===== Core

@@ -1,0 +1,13 @@
+diff --git a/iceoryx_meta/tests.cmake b/iceoryx_meta/tests.cmake
+index f3a8027..796b5e2 100644
+--- a/iceoryx_meta/tests.cmake
++++ b/iceoryx_meta/tests.cmake
+@@ -15,7 +15,7 @@
+ cmake_minimum_required(VERSION 3.5)
+ 
+ if (BUILD_TEST)
+-    add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../cmake/googletest ${CMAKE_BINARY_DIR}/dependencies/googletest/prebuild)
++    find_package(GTest CONFIG REQUIRED)
+ 
+     ### create component list
+     set(COMPONENTS "utils" "posh")
