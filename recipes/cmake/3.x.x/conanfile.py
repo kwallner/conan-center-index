@@ -100,6 +100,7 @@ class CMakeConan(ConanFile):
 
     def package_id(self):
         del self.info.settings.compiler
+        del self.info.settings.build_type
 
     def package_info(self):
         minor = self._minor_version()
