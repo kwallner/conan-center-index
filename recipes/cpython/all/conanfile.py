@@ -4,7 +4,7 @@ import shutil
 from conans import ConanFile, tools, AutoToolsBuildEnvironment
 from conans.errors import ConanInvalidConfiguration
 from conans.model.version import Version
-
+from conans.tools import os_info, SystemPackageTool
 
 class CPythonConan(ConanFile):
     name = "cpython"
@@ -39,13 +39,46 @@ class CPythonConan(ConanFile):
     def system_requirements(self):
         if self.settings.os == "Linux":
             installer = tools.SystemPackageTool()
-            installer.install("zlib1g-dev") 
+            packages = []
+            if os_info.linux_distro == "ubuntu":
+                if tools.cross_building:
+                    pass
+                else:
+                    packages.extend([
+                        'libssl-dev', 
+                        'zlib1g-dev', 
+                        'libncurses5-dev', 
+                        'libncursesw5-dev', 
+                        'libreadline-dev', 
+                        'libsqlite3-dev', 
+                        'libgdbm-dev', 
+                        'libdb5.3-dev', 
+                        'libbz2-dev', 
+                        'libexpat1-dev', 
+                        'liblzma-dev', 
+                        'libffi-dev' ])
+            for package in packages:
+                installer.install(package) 
 
     def source(self):
         tools.get(**self.conan_data["sources"][self.version])
         extracted_dir = "Python-" + self.version
         os.rename(extracted_dir, self._source_subfolder)
-        
+
+    def __gnu_architecture(self, arch_name):
+        if arch_name == "armv8":
+            return "aarch64"
+        else:
+            return arch_name
+
+    @property
+    def _gnu_triplet_build(self):
+        return "%s-%s-gnu" % (self.__gnu_architecture(self.settings.arch_build), str(self.settings.os_build).lower())
+    
+    @property
+    def _gnu_triplet_host(self):
+        return "%s-%s-gnu" % (self.__gnu_architecture(self.settings.arch), str(self.settings.os).lower())
+
     def build(self):
         self._build_configuration()
         with tools.chdir(self._source_subfolder):
@@ -69,9 +102,21 @@ class CPythonConan(ConanFile):
                     )
                 atools = AutoToolsBuildEnvironment(self)
                 args = ["--enable-shared"] if self.options.shared else []
-                atools.configure(args=args)
-                atools.make()
-                atools.install()
+                if tools.cross_building:
+                    args.append("--build=%s" % self._gnu_triplet_host)
+                    args.append("--host=%s" % self._gnu_triplet_host)
+                    # Yet does not work with ip-v6 enabled
+                    args.append("--disable-ipv6")
+                    args.append("--without-ensurepip")
+                    # Need some hackz to for cross compile
+                with open("config.site", "w") as f:
+                    if tools.cross_building:
+                        print("ac_cv_file__dev_ptmx=no", file=f)
+                        print("ac_cv_file__dev_ptc=no", file=f)
+                with tools.environment_append({"CONFIG_SITE" : "config.site"}):
+                    atools.configure(args=args)
+                    atools.make()
+                    atools.install()
 
     def package(self):
         if self.settings.os == "Windows":
