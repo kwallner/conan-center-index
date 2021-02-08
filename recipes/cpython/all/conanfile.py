@@ -35,30 +35,30 @@ class CPythonConan(ConanFile):
                 pass
             else:
                 raise ConanInvalidConfiguration("Python does only support Visual Studio 2017 or Visual Studio 2019 with toolset v141")
-           
-    def system_requirements(self):
-        if self.settings.os == "Linux":
-            installer = tools.SystemPackageTool()
-            packages = []
-            if os_info.linux_distro == "ubuntu":
-                if tools.cross_building:
-                    pass
-                else:
-                    packages.extend([
-                        'libssl-dev', 
-                        'zlib1g-dev', 
-                        'libncurses5-dev', 
-                        'libncursesw5-dev', 
-                        'libreadline-dev', 
-                        'libsqlite3-dev', 
-                        'libgdbm-dev', 
-                        'libdb5.3-dev', 
-                        'libbz2-dev', 
-                        'libexpat1-dev', 
-                        'liblzma-dev', 
-                        'libffi-dev' ])
-            for package in packages:
-                installer.install(package) 
+    #def system_requirements(self):
+    #    if self.settings.os == "Linux":
+    #        installer = tools.SystemPackageTool()
+    #        packages = []
+    #        if os_info.linux_distro == "ubuntu":
+    #            if tools.cross_building:
+    #                packages.extend(["python2"]) # Needed for configuration
+    #        for package in packages:
+    #            installer.install(package) 
+
+    def build_requirements(self):
+        if self.settings.os != "Windows":
+            self.build_requires("openssl/1.1.1i")
+            self.build_requires("zlib/1.2.11")
+            self.build_requires("bzip2/1.0.8")
+            self.build_requires("sqlite3/3.34.0")
+            #self.build_requires("libdb/5.3.28") # Disabled because cross compile was not supported
+            self.build_requires("expat/2.2.10")
+            #self.build_requires("ncurses/6.2") # Disabled because cross compile was not supported
+            #self.build_requires("lzma_sdk/9.20") # Disabled because was not used
+            self.build_requires("libffi/3.3")
+            #self.build_requires("readline/8.0") # Disabled because of License used (GPL-v3)
+            #self.build_requires("libuuid/1.0.3") # Disabled because cross compile was not supported
+            #self.build_requires("gdbm/1.18.1") # Disabled because of License used (GPL-v3)
 
     def source(self):
         tools.get(**self.conan_data["sources"][self.version])
@@ -107,12 +107,19 @@ class CPythonConan(ConanFile):
                     args.append("--host=%s" % self._gnu_triplet_host)
                     # Yet does not work with ip-v6 enabled
                     args.append("--disable-ipv6")
-                    args.append("--without-ensurepip")
-                    # Need some hackz to for cross compile
                 with open("config.site", "w") as f:
                     if tools.cross_building:
                         print("ac_cv_file__dev_ptmx=no", file=f)
                         print("ac_cv_file__dev_ptc=no", file=f)
+                # Configure: enable libffi
+                args.append("--without-system-ffi")
+                # Configure: enable openssl
+                args.append("--with-ssl-default-suites=openssl")
+                args.append("--with-openssl=%s" % self.deps_cpp_info["openssl"].rootpath)
+                # Configure: disable pip
+                args.append("--without-ensurepip")
+                # Configure: enable optimizations
+                args.append("--enable-optimizations")
                 with tools.environment_append({"CONFIG_SITE" : "config.site"}):
                     atools.configure(args=args)
                     atools.make()
