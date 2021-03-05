@@ -37,7 +37,7 @@ class GmpConan(ConanFile):
             raise ConanInvalidConfiguration("Cannot build a shared library using Visual Studio: some error occurs at link time")
         if self.options.shared:
             del self.options.fPIC
-        if self.options.enable_fat:
+        if self.options.get_safe("enable_fat"):
             del self.options.disable_assembly
         if not self.options.enable_cxx:
             del self.settings.compiler.libcxx
@@ -47,6 +47,7 @@ class GmpConan(ConanFile):
         del self.info.options.run_checks  # run_checks doesn't affect package's ID
 
     def build_requirements(self):
+        self.build_requires("m4/1.4.18")
         if tools.os_info.is_windows and not tools.get_env("CONAN_BASH_PATH"):
             self.build_requires("msys2/20200517")
         if self.settings.compiler == "Visual Studio":
@@ -68,6 +69,7 @@ class GmpConan(ConanFile):
             os.chmod(configure_file, configure_stats.st_mode | stat.S_IEXEC)
         yes_no = lambda v: "yes" if v else "no"
         configure_args = [
+            "--with-pic={}".format(yes_no(self.options.get_safe("fPIC", True))),
             "--enable-assembly={}".format(yes_no(not self.options.get_safe("disable_assembly", False))),
             "--enable-fat={}".format(yes_no(self.options.get_safe("enable_fat", False))),
             "--enable-cxx={}".format(yes_no(self.options.enable_cxx)),
