@@ -1,0 +1,11 @@
+sources:
+  "2.0.1":
+    "Windows":
+      url: "https://storage.googleapis.com/flutter_infra/releases/stable/windows/flutter_windows_2.0.1-stable.zip"
+      sha256: "e3abdabf62d98b7b2773047f67ce3f2f996b50132a85395453de019d43bbe721"
+    "Linux":
+      url: "https://storage.googleapis.com/flutter_infra/releases/stable/linux/flutter_linux_2.0.1-stable.tar.xz"
+      sha256: "7938e7c78cd277fcf2f01291cd590b9d5adb0c4342763044c9d9678901829241"
+    "Macos":
+      url: "https://storage.googleapis.com/flutter_infra/releases/stable/macos/flutter_macos_2.0.1-stable.zip"
+      sha256: "0d1985d0cc6ef99a51c8b2051aceb07eb654a02973e8e43aaf28ef1d8c3735b4"
